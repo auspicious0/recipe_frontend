@@ -1,31 +1,226 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>레시피 추천해주는 챗요리</title>
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e6e6e6;
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .chat-messages {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .message .from {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .message .text {
+            margin: 0;
+        }
+
+        .chat-input {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            border-top: 1px solid #e6e6e6;
+        }
+
+        .chat-input input[type="text"] {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .intro-container{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .intro-container img {
+            width: 50%;
+            min-width: 300px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1></h1>
-    <button onclick="getRecipe()">요청하기</button>
+    <div id="intro" class="intro-container">
+        <h1>식사하셨나요?</h1>
+        <img src="cooker.png" alt="chatcooker">
+        <label for="calories">원하는 칼로리 선택</label>
+        <select name="calories" id="calories">
+            <option value="">상관없음.</option>
+            <option value="1000">1000 calories</option>
+            <option value="2000">2000 calories</option>
+            <option value="3000">3000 calories</option>
+            <option value="4000">4000 calories</option>
+            <option value="5000">5000 calories</option>
+            <option value="6000">6000 calories</option>
+            <option value="7000">7000 calories</option>
+            <option value="8000">8000 calories</option>
+            <option value="9000">9000 calories</option>
+            <option value="10000">10000 calories</option>
+            <option value="11000">11000 calories</option>
+            <option value="12000">12000 calories</option>
+            <option value="13000">13000 calories</option>
+            <option value="14000">14000 calories</option>
+            <option value="15000">15000 calories</option>
+            <option value="16000">16000 calories</option>
+            <option value="17000">17000 calories</option>
+            <option value="18000">18000 calories</option>
+            <option value="19000">19000 calories</option>
+            <option value="20000">20000 calories</option>
+          </select>
+        <label for="diet-select">다이어트 여부</label>
+        <select id="diet-select">
+            <option value="diet">다이어트중</option>
+            <option value="non-diet">마음 껏 먹기중</option>
+          </select>
+          <button onclick="start()">오늘의 식단 보기</button>
+        
+    </div>
+    <div id="chat" class="chat-container" style="display: none;">
+        <div class="chat-header">
+            <h1>챗요리 - 레시피 추천 챗봇</h1>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+        </div>
+        <div class="chat-input">
+            <input type="text" id="input-message" placeholder="메시지를 입력하세요">
+            <button onclick="sendMessage()">보내기</button>
+        </div>
+    </div>
+
     <script>
+        let userMessage = [];
+        let assistantMessage = [];
+        let myCalories = '';
+        let myDiet='';
+        const chatMessages = document.getElementById("chat-messages");
+        const inputMessage = document.getElementById("input-message");
+        function start(){
+            const calories = document.getElementById('calories').value;
+            const diet = document.getElementById('diet-select').value;
+            
+
+            if(diet===''){
+                alert('다이어트 유무를 입력해주세요');
+                return;
+            }
+            myCalories=calories;
+            myDiet=diet;
+            document.getElementById("intro").style.display="none";
+            document.getElementById("chat").style.display="block";
+
+        }
         async function getRecipe() {
-            try{
-                const response = await fetch('http://localhost:3000/recipeTell',{
+            try {
+                const message = inputMessage.value;
+                const response = await fetch('http://localhost:3000/recipeTell', {
                     method: 'POST',
                     headers: {
-                        'Content-Type':'application/json'
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({name: 'John' }) //replace with your desized data
+                    body: JSON.stringify({
+                        myCalories:myCalories,
+                        myDiet:myDiet,
+                        userMessage: userMessage,
+                        assistantMessage: assistantMessage
+                    })
                 });
-                const data=await response.json();
-                console.log(data);
-                return data;
-            }catch(error){
+                const data = await response.json();
+                assistantMessage.push(data.assistant);
+
+                const messageHtml = `
+            <div class="message">
+                <p class="from">챗요리</p>
+                <p class="text">${data.assistant}</p>
+            </div>
+        `;
+                chatMessages.insertAdjacentHTML("beforeend", messageHtml);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
                 console.error(error);
             }
         }
+
+
+        function sendMessage() {
+            const message = inputMessage.value;
+            if (!message) return;
+
+            const newMessage = `
+                <div class="message">
+                    <p class="from">사용자</p>
+                    <p class="text">${message}</p>
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML("beforeend", newMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            //user message 추가
+            userMessage.push(message);
+            inputMessage.value = "";
+
+            // Get response from server and display
+            getRecipe();
+        }
+
+        // Press Enter key to send message
+        inputMessage.addEventListener("keyup", function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementById("submit-button").click();
+            }
+        });
     </script>
 </body>
+
 </html>
