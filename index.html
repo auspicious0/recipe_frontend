@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>레시피 추천해주는 챗요리</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
             background-color: #f7f7f7;
@@ -87,6 +88,10 @@
             width: 50%;
             min-width: 300px;
         }
+        #loading {
+            font-size: 25px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -130,12 +135,19 @@
         <div class="chat-header">
             <h1>챗요리 - 레시피 추천 챗봇</h1>
         </div>
+        
         <div class="chat-messages" id="chat-messages">
+        </div>
+        <div id="loading" style="display:none;">
+            <i class="fas fa-spinner fa-spin"></i>
         </div>
         <div class="chat-input">
             <input type="text" id="input-message" placeholder="메시지를 입력하세요">
             <button onclick="sendMessage()">보내기</button>
         </div>
+        
+
+          
     </div>
 
     <script>
@@ -163,7 +175,7 @@
         async function getRecipe() {
             try {
                 const message = inputMessage.value;
-                const response = await fetch('http://localhost:3000/recipeTell', {
+                const response = await fetch('https://hqteky8wy2.execute-api.ap-northeast-2.amazonaws.com/auspicious/recipeTell', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -176,6 +188,8 @@
                     })
                 });
                 const data = await response.json();
+                document.getElementById('loading').style.display="none";
+
                 assistantMessage.push(data.assistant);
 
                 const messageHtml = `
@@ -193,6 +207,7 @@
 
 
         function sendMessage() {
+            document.getElementById('loading').style.display="block";
             const message = inputMessage.value;
             if (!message) return;
 
