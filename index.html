@@ -92,6 +92,14 @@
             font-size: 25px;
             text-align: center;
         }
+        .kakao-ad{
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            min-width: 350px;
+            min-height: 200px;
+        }
     </style>
 </head>
 
@@ -144,10 +152,15 @@
         <div class="chat-input">
             <input type="text" id="input-message" placeholder="메시지를 입력하세요">
             <button onclick="sendMessage()">보내기</button>
-        </div>
-        
-
-          
+        </div>  
+    </div>
+    <div class ="kakao-ad">
+        <ins class="kakao_ad_area" style="display:none;"
+            data-ad-unit = "DAN-YbOmygHZMrNnvxS5"
+            data-ad-width = "320"
+            data-ad-height = "100">
+        </ins>
+        <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>  
     </div>
 
     <script>
@@ -195,7 +208,7 @@
                 const messageHtml = `
             <div class="message">
                 <p class="from">챗요리</p>
-                <p class="text">${data.assistant}</p>
+                <p class="text">${data.assistant} \n <br>추가로 링크를 눌러 작은 정성을 배풀어 주시면 더욱 맛있는 음식을 드실 수 있게 노력하겠습니다. => <a href='https://toss.me/신나게신바람'>복체 보내기</a></p>
             </div>
         `;
                 chatMessages.insertAdjacentHTML("beforeend", messageHtml);
