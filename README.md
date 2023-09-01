@@ -1,6 +1,6 @@
 
 # Recipe 웹 애플리케이션
-
+ 
 Recipe 웹 애플리케이션은 백엔드와 프론트엔드 부분으로 구성된 레시피 추천 서비스입니다. 이 웹 애플리케이션은 사용자가 원하는 칼로리와 다이어트 여부를 입력하면 레시피를 추천해줍니다.
 
 ![recipe](https://github.com/auspicious0/recipe_frontend/assets/108572025/ac59728c-0c75-40d8-aa16-f664d265949c)
